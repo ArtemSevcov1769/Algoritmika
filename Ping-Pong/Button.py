@@ -1,39 +1,38 @@
 import pygame
 
-class Button():
-    def __init__(self, x=0, y=0, width=0, height=0, text='Default',
-                 text_color = (0, 255, 255), text_size=20, normal_color=(20, 20, 20),
-                 hover_color=(150, 250, 150), center_x=True
-                 ):
+
+class Button:
+    def __init__(
+        self, x=0, y=0, width=10, height=10,
+        text='Default', text_color=(240, 240, 240),
+        normal_color=(92, 11, 143), hover_color=(179, 73, 245),
+        font_size=20, font_family='Arial', center_x=True
+    ):
         self.rect = pygame.Rect(x, y, width, height)
-        self.text_color = text_color
         self.text = text
+        self.text_color = text_color
         self.normal_color = normal_color
         self.hover_color = hover_color
-        self.font = pygame.font.Font(None, text_size)
-        if center_x == True:
-            w_width, w_height = pygame.display.get_window_size()
-            w_rect = pygame.Rect(0, 0, w_width, w_height)
-            self.rect.centerx = w_rect.centerx
-        self.is_hover = False
+        self.font_size = font_size
+        self.font_family = font_family
+        w_width, w_height = pygame.display.get_window_size()
+        if center_x:
+            window_rect = pygame.Rect(0, 0, w_width, w_height)
+            self.rect.centerx = window_rect.centerx
+        self.is_hovered = False
+        self.font = pygame.font.SysFont(font_family, font_size)
+    
     def draw(self, window):
-        if self.is_hover:
+        image = self.font.render(self.text, True, self.text_color)
+        image_rect = image.get_rect()
+        image_rect.center = self.rect.center
+        if self.is_hovered:
             color = self.hover_color
         else:
             color = self.normal_color
         pygame.draw.rect(window, color, self.rect)
-        text = self.font.render(self.text, True, self.text_color)
-        text_rect = text.get_rect()
-        text_rect.center = self.rect.center
-        window.blit(text, (text_rect.x, text_rect.y))
-    def update(self, events):
-        for event in events:
-            if event.type == pygame.MOUSEMOTION:
-                if self.rect.collidepoint(event.pos):
-                    self.is_hover = True
-                    break
-                else:
-                    self.is_hover = False
+        window.blit(image, (image_rect.x, image_rect.y))
+
     def is_clicked(self, events):
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -41,22 +40,42 @@ class Button():
                     return True
         return False
 
-pygame.init()
-pygame.font.init()
-window = pygame.display.set_mode((500, 600))
-window.fill((255, 255, 255))
-clock = pygame.time.Clock()
-btn = Button(y=200, width=150, height=40, text='lskajhfaf', text_size=30)
+    def update(self, events):
+        for event in events:
+            if event.type == pygame.MOUSEMOTION:
+                if self.rect.collidepoint(event.pos):
+                    self.is_hovered = True
+                    break
+                else:
+                    self.is_hovered = False
+if __name__ == "__main__":
+    
+    pygame.init()
+    pygame.font.init()
+    window = pygame.display.set_mode((600, 400))
+    window.fill((253, 199, 255))
+    clock = pygame.time.Clock()
 
-run = True
-while run:
-    events = pygame.event.get()
-    if btn.is_clicked(events):
-        print('btn click')
-    btn.update(events)
-    btn.draw(window)
-    for event in events:
-        if event.type == pygame.QUIT:
-            run = False
-    pygame.display.update()
-    clock.tick(30)
+    btn_start = Button(y=200, width=150, height=40, text='Начать игру')
+    btn_exit = Button(y=250, width=150, height=40, text='Выход')
+
+    game = True
+    while game:
+        window.fill((253, 199, 255))
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                game = False
+        
+        btn_start.draw(window)
+        btn_start.update(events)
+        if btn_start.is_clicked(events):
+            print('Игра начинается')
+
+        btn_exit.draw(window)
+        btn_exit.update(events)
+        if btn_exit.is_clicked(events):
+            print('Конец!')
+
+        clock.tick(60)
+        pygame.display.update()
