@@ -56,6 +56,9 @@ btn_exit = Button(y=300, width=150, height=40, text='Выход', font_size=26)
 btn_continue = Button(y=200, width=150, height=40, text='Продолжить', font_size=26)
 btn_to_menu = Button(y=250, width=150, height=40, text='Вернуться в меню', font_size=26)
 
+
+btn_restart = Button(y=200, width=150, height=40, text='Начать заново', font_size=26)
+
 platform_1 = Player(platform_img, 10, HEIGHT/2, 15, 90, 5, K_w, K_s)
 platform_2 = Player(platform_img, 570, HEIGHT/2, 15, 90, 5, K_UP, K_DOWN)
 ball = Ball(ball_img, WIDTH/2, HEIGHT/4, 32, 32, 3)
@@ -88,6 +91,32 @@ def menu(events):
     if btn_start.is_clicked(events):
         restart()
         stage = 'game'
+
+def check_status():
+    global stage
+    if ball.rect.x < -ball.rect.width:
+        stage = '2 win'
+    if ball.rect.x > WIDTH:
+        stage = '1 win'
+
+def win_screen(events):
+    global stage
+    if stage == '2 win':
+        print('Второй победил')
+    elif stage == '1 win':
+        print('Первой победил')
+    btn_restart.update(events)
+    btn_to_menu.update(events)
+    btn_restart.draw(mw)
+    btn_to_menu.draw(mw)
+    if btn_restart.is_clicked(events):
+        restart()
+        stage = 'game'
+    if btn_to_menu.is_clicked(events):
+        stage = 'menu'
+    
+
+
 def pause(events):
     mw.blit(background, (0, 0))
     btn_continue.update(events)
@@ -118,8 +147,11 @@ while stage != 'off':
         menu(events)
     elif stage == 'game':
         game()
+        check_status()
     elif stage == 'pause':
         pause(events)
+    elif stage == '2 win' or stage == '1 win':
+        win_screen(events)
     display.update()
     clock.tick(FPS)
     
