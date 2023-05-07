@@ -8,6 +8,7 @@ platform_img = 'platforn.png'
 ball_img = 'ball.png'
 display.set_caption('Ping_pong')
 
+
 class GameSprite(sprite.Sprite):
     def __init__(self, sprite_image, x=0, y=0, w=50, h=50):
         super().__init__()

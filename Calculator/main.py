@@ -1,5 +1,4 @@
 from PyQt5.QtCore import Qt
-# from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QGridLayout, QPushButton)
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QLineEdit, QSizePolicy
 
 class Display(QLineEdit):
@@ -15,9 +14,34 @@ class StretchButton(QPushButton):
         self.setMinimumSize(50, 50)
         self.setStyleSheet('''
             QPushButton {
-            background-color: #000000;
+            background-color: #696969;
             color: #ffffff;
-            border-radius: 15px;
+            border-radius: 34px;
+            }
+        ''')
+class StretchButton_2(QPushButton):
+    def __init__(self, text):
+        super().__init__(text)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMinimumSize(50, 50)
+        self.setStyleSheet('''
+            QPushButton {
+            background-color: #ff9000;
+            color: #ffffff;
+            border-radius: 34px;
+            }
+        ''')
+
+class StretchButton_3(QPushButton):
+    def __init__(self, text):
+        super().__init__(text)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setMinimumSize(50, 50)
+        self.setStyleSheet('''
+            QPushButton {
+            background-color: #b3b3b3;
+            color: #ffffff;
+            border-radius: 34px;
             }
         ''')
 
@@ -30,7 +54,7 @@ class MainWindow(QWidget):
         self.to_slove = ''
         self.setStyleSheet('''
         QWidget{
-        background-color: #d7d7d7;
+        background-color: #000000;
             }
         ''')
     def create_grid_layout(self):
@@ -44,16 +68,16 @@ class MainWindow(QWidget):
         btn_7 = StretchButton('7')
         btn_8 = StretchButton('8')
         btn_9 = StretchButton('9')
-        btn_0 = StretchButton('0')
-        btn_plus = StretchButton('+')
-        btn_minus = StretchButton('-')
-        btn_ravno = StretchButton('=')
-        btn_umn = StretchButton('*')
-        btn_del = StretchButton('/')
+        btn_0 = StretchButton('0                       ')
+        btn_plus = StretchButton_3('+')
+        btn_minus = StretchButton_2('-')
+        btn_ravno = StretchButton_2('=')
+        btn_umn = StretchButton_2('*')
+        btn_del = StretchButton_2('/')
         self.edit = Display()
         btn_pount = StretchButton('.')
-        btn_clear = StretchButton('c')
-        btn_delit = StretchButton('<-')
+        btn_clear = StretchButton_3('c')
+        btn_delit = StretchButton_3('<-')
         btn_1.clicked.connect(self.btn_handler)
         btn_2.clicked.connect(self.btn_handler)
         btn_3.clicked.connect(self.btn_handler)
