@@ -1,0 +1,24 @@
+from PyQt5 import QtWidgets, QtGui, QtCore
+class MainWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setGeometry(0, 0, 720, 480)
+
+    def create_grid_layout(self):
+        layout = QGridLayout()
+        btn_add_pwd = QtWidget.QPusshButton('Add')
+        pwd_list = QtWidgets.QListWidget()
+
+
+        layout.addWidget(btn_add_pwd, 0, 0, 2, 2)
+        layout.addWidget(pwd_list, 1, 0, 5, 5)
+        self.QtWidgets.setLayout(layout)
+
+
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication([])
+    mw = MainWindow()
+    mw.show()
+    app.exec()
