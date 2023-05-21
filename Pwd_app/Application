@@ -1,23 +1,123 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
+import keyring
+import json
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        self.setGeometry(0, 0, 720, 480)
+        self.db = DataBase()
+        self.initUI()
+        self.setWindowTitle('PasswordManager')
+        self.resize(600, 480)
+        self.add_pwd_win = PasswordWindow(self.db, self)
+        self.btn_add_pwd.clicked.connect(self.add_pwd_win.show)
 
-    def create_grid_layout(self):
-        layout = QGridLayout()
-        btn_add_pwd = QtWidget.QPusshButton('Add')
-        pwd_list = QtWidgets.QListWidget()
+    def initUI(self):
+        self.btn_add_pwd = QtWidgets.QPushButton('Добавить')
+        self.pwd_list = QtWidgets.QListWidget()
+
+        h_layout = QtWidgets.QHBoxLayout()
+        v_layout = QtWidgets.QVBoxLayout()
+
+        h_layout.addStretch(6)
+        h_layout.addWidget(self.btn_add_pwd, stretch=2)
+
+        v_layout.addLayout(h_layout)
+        v_layout.addWidget(self.pwd_list)
+
+        self.setLayout(v_layout)
+
+    def update_list(self):
+        self.pwd_list.clear()
+        data = self.db.get_list()
+        self.pwd_list.addItems(data)
+    
 
 
-        layout.addWidget(btn_add_pwd, 0, 0, 2, 2)
-        layout.addWidget(pwd_list, 1, 0, 5, 5)
-        self.QtWidgets.setLayout(layout)
+class PasswordWindow(QtWidgets.QWidget):
+    def __init__(self, db, mw):
+        super().__init__()
+        self.db = db
+        self.mw = mw
+        self.initUI()
+        self.btn_save.clicked.connect(self.add_password)
+    def initUI(self):
+        v_layout = QtWidgets.QVBoxLayout()
+        h_1 = QtWidgets.QHBoxLayout()
+        h_2 = QtWidgets.QHBoxLayout()
+        h_3 = QtWidgets.QHBoxLayout()
+
+        self.btn_save = QtWidgets.QPushButton('Save')
+        self.btn_close = QtWidgets.QPushButton('Закрыть')
+        self.btn_copy = QtWidgets.QPushButton('Copy')
+
+        self.service_edit = QtWidgets.QLineEdit()
+        self.login_edit = QtWidgets.QLineEdit()
+        self.pwd_edit = QtWidgets.QLineEdit()
+
+        self.pwd_edit.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
+
+        service_lbl = QtWidgets.QLabel('Название сервиса')
+        login_lbl = QtWidgets.QLabel('Логин')
+        pwd_lbl = QtWidgets.QLabel('Пароль')
+
+        h_1.addWidget(service_lbl, stretch=3)
+        h_1.addWidget(self.service_edit, stretch=5)
+
+        h_2.addWidget(login_lbl, stretch=3)
+        h_2.addWidget(self.login_edit, stretch=5)
+
+        h_3.addWidget(pwd_lbl, stretch=3)
+        h_3.addWidget(self.pwd_edit, stretch=5)
+
+        v_layout.addLayout(h_1)
+        v_layout.addLayout(h_2)
+        v_layout.addLayout(h_3)
+        v_layout.addWidget(self.btn_save, alignment=QtCore.Qt.AlignCenter)
+
+        self.setLayout(v_layout)
+    
+    def add_password(self):
+        service = self.service_edit.text()
+        login = self.login_edit.text()
+        password = self.pwd_edit.text()
+        self.db.set_password(service, login, password)
+        self.service_edit.clear()
+        self.login_edit.clear()
+        self.pwd_edit.clear()
+        self.hide()
+        self.mw.update_list
+        ()
+
+
+class DataBase:
+    def __init__(self):
+        self.filename = 'services.json'
+        try:
+            with open(self.filename, 'r') as file:
+                self.data = json.load(file)
+        except:
+            open(self.filename, 'w')
+            self.data = dict()
+    def set_password(self, services, login, pwd):
+        keyring.set_password(services, login, pwd)
+        self.data[services] = login
+        with open(self.filename, 'w') as file:
+            json.dump(self.data, file)
+    
+    def get_password(self, services, login):
+        return keyring.get_password(services, login)
+
+
+    def get_list(self):
+        result = []
+        for key in self.data:
+            text = key + ' | ' + self.data[key]
+            result.append(text)
+        return result
 
 
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     mw = MainWindow()
     mw.show()
